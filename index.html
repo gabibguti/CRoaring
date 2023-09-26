@@ -29,7 +29,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">CRoaring
-   &#160;<span id="projectnumber">1.1.2</span>
+   &#160;<span id="projectnumber">2.0.1</span>
    </div>
    <div id="projectbrief">Roaring bitmaps in C (and C++)</div>
   </td>
@@ -96,7 +96,7 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <h1><a class="anchor" id="autotoc_md1"></a>
 Introduction</h1>
 <p>Bitsets, also called bitmaps, are commonly used as fast data structures. Unfortunately, they can use too much memory. To compensate, we often use compressed bitmaps.</p>
-<p>Roaring bitmaps are compressed bitmaps which tend to outperform conventional compressed bitmaps such as WAH, EWAH or Concise. They are used by several major systems such as <a href="https://lucene.apache.org/">Apache Lucene</a> and derivative systems such as <a href="https://lucene.apache.org/solr/">Solr</a> and <a href="https://www.elastic.co/products/elasticsearch">Elasticsearch</a>, <a href="http://druid.io/">Metamarkets' Druid</a>, <a href="http://github.com/linkedin/pinot/wiki">LinkedIn Pinot</a>, <a href="https://github.com/Netflix/atlas">Netflix Atlas</a>, <a href="https://spark.apache.org/">Apache Spark</a>, <a href="http://www.opensearchserver.com">OpenSearchServer</a>, <a href="https://github.com/jpillora/cloud-torrent">Cloud Torrent</a>, <a href="https://bitbucket.org/mchaput/whoosh/wiki/Home">Whoosh</a>, <a href="https://www.influxdata.com">InfluxDB</a>, <a href="https://www.pilosa.com/">Pilosa</a>, <a href="http://www.blevesearch.com">Bleve</a>, <a href="https://www.visualstudio.com/team-services/">Microsoft Visual Studio Team Services (VSTS)</a>, and eBay's <a href="http://kylin.apache.org/">Apache Kylin</a>. The CRoaring library is used in several systems such as <a href="http://doris.incubator.apache.org">Apache Doris</a>. The YouTube SQL Engine, <a href="https://research.google/pubs/pub48388/">Google Procella</a>, uses Roaring bitmaps for indexing.</p>
+<p>Roaring bitmaps are compressed bitmaps which tend to outperform conventional compressed bitmaps such as WAH, EWAH or Concise. They are used by several major systems such as <a href="https://lucene.apache.org/">Apache Lucene</a> and derivative systems such as <a href="https://lucene.apache.org/solr/">Solr</a> and <a href="https://www.elastic.co/products/elasticsearch">Elasticsearch</a>, <a href="http://druid.io/">Metamarkets' Druid</a>, <a href="http://github.com/linkedin/pinot/wiki">LinkedIn Pinot</a>, <a href="https://github.com/Netflix/atlas">Netflix Atlas</a>, <a href="https://spark.apache.org/">Apache Spark</a>, <a href="http://www.opensearchserver.com">OpenSearchServer</a>, <a href="https://github.com/jpillora/cloud-torrent">Cloud Torrent</a>, <a href="https://bitbucket.org/mchaput/whoosh/wiki/Home">Whoosh</a>, <a href="https://www.influxdata.com">InfluxDB</a>, <a href="https://www.pilosa.com/">Pilosa</a>, <a href="http://www.blevesearch.com">Bleve</a>, <a href="https://www.visualstudio.com/team-services/">Microsoft Visual Studio Team Services (VSTS)</a>, and eBay's <a href="http://kylin.apache.org/">Apache Kylin</a>. The CRoaring library is used in several systems such as <a href="http://doris.incubator.apache.org">Apache Doris</a>, <a href="https://github.com/StarRocks/starrocks">StarRocks</a>. The YouTube SQL Engine, <a href="https://research.google/pubs/pub48388/">Google Procella</a>, uses Roaring bitmaps for indexing.</p>
 <p>We published a peer-reviewed article on the design and evaluation of this library:</p>
 <ul>
 <li>Roaring Bitmaps: Implementation of an Optimized Software Library, Software: Practice and Experience 48 (4), 2018 <a href="https://arxiv.org/abs/1709.07821">arXiv:1709.07821</a></li>
@@ -115,7 +115,7 @@ Requirements</h1>
 <ul>
 <li>Linux, macOS, FreeBSD, Windows (MSYS2 and Microsoft Visual studio).</li>
 <li>We test the library with ARM, x64/x86 and POWER processors. We only support little endian systems (big endian systems are vanishingly rare).</li>
-<li>Recent C compiler supporting the C11 standard (GCC 7 or better, LLVM 7.0 or better, Xcode 11 or better), there is also an optional C++ class that requires a C++ compiler supporting the C++11 standard.</li>
+<li>Recent C compiler supporting the C11 standard (GCC 7 or better, LLVM 7.0 or better, Xcode 11 or better, Microsoft Visual Studio 2022 or better, Intel oneAPI Compiler 2023.2 or better), there is also an optional C++ class that requires a C++ compiler supporting the C++11 standard.</li>
 <li>CMake (to contribute to the project, users can rely on amalgamation/unity builds if they do not wish to use CMake).</li>
 <li>Under x64 systems, the library provides runtime dispatch so that optimized functions are called based on the detected CPU features. It works with GCC, clang (version 9 and up) and Visual Studio (2017 and up). Other systems (e.g., ARM) do not need runtime dispatch.</li>
 </ul>
@@ -318,12 +318,15 @@ Example (C)</h1>
 <div class="line">    uint32_t expectedsize = roaring_bitmap_portable_size_in_bytes(r1);</div>
 <div class="line">    <span class="keywordtype">char</span> *serializedbytes = malloc(expectedsize);</div>
 <div class="line">    roaring_bitmap_portable_serialize(r1, serializedbytes);</div>
-<div class="line">    <span class="comment">// For additional safety, you may replace roaring_bitmap_portable_deserialize by</span></div>
-<div class="line">    <span class="comment">// roaring_bitmap_portable_deserialize_safe.</span></div>
 <div class="line">    <span class="comment">// Note: it is expected that the input follows the specification</span></div>
 <div class="line">    <span class="comment">// https://github.com/RoaringBitmap/RoaringFormatSpec</span></div>
 <div class="line">    <span class="comment">// otherwise the result may be unusable.</span></div>
-<div class="line">    roaring_bitmap_t *t = roaring_bitmap_portable_deserialize(serializedbytes);</div>
+<div class="line">    roaring_bitmap_t *t = roaring_bitmap_portable_deserialize_safe(serializedbytes, expectedsize);</div>
+<div class="line">    <span class="keywordflow">if</span>(t == NULL) { <span class="keywordflow">return</span> EXIT_FAILURE; }</div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">char</span> *reason = NULL;</div>
+<div class="line">    <span class="keywordflow">if</span> (!roaring_bitmap_internal_validate(t, &amp;reason)) {</div>
+<div class="line">        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">    }</div>
 <div class="line">    assert(roaring_bitmap_equals(r1, t));  <span class="comment">// what we recover is equal</span></div>
 <div class="line">    roaring_bitmap_free(t);</div>
 <div class="line">    <span class="comment">// we can also check whether there is a bitmap at a memory location without</span></div>
@@ -334,6 +337,18 @@ Example (C)</h1>
 <div class="line">           expectedsize);  <span class="comment">// sizeofbitmap would be zero if no bitmap were found</span></div>
 <div class="line">    <span class="comment">// we can also read the bitmap &quot;safely&quot; by specifying a byte size limit:</span></div>
 <div class="line">    t = roaring_bitmap_portable_deserialize_safe(serializedbytes, expectedsize);</div>
+<div class="line">    <span class="keywordflow">if</span>(t == NULL) {</div>
+<div class="line">        printf(<span class="stringliteral">&quot;Problem during deserialization.\n&quot;</span>);</div>
+<div class="line">        <span class="comment">// We could clear any memory and close any file here.</span></div>
+<div class="line">        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">    }</div>
+<div class="line">    <span class="comment">// We can validate the bitmap we recovered to make sure it is proper.</span></div>
+<div class="line">    <span class="keyword">const</span> <span class="keywordtype">char</span> *reason_failure = NULL;</div>
+<div class="line">    <span class="keywordflow">if</span> (!roaring_bitmap_internal_validate(t, &amp;reason_failure)) {</div>
+<div class="line">        printf(<span class="stringliteral">&quot;safely deserialized invalid bitmap: %s\n&quot;</span>, reason_failure);</div>
+<div class="line">        <span class="comment">// We could clear any memory and close any file here.</span></div>
+<div class="line">        <span class="keywordflow">return</span> EXIT_FAILURE;</div>
+<div class="line">    }</div>
 <div class="line">    <span class="comment">// It is still necessary for the content of seriallizedbytes to follow</span></div>
 <div class="line">    <span class="comment">// the standard: https://github.com/RoaringBitmap/RoaringFormatSpec</span></div>
 <div class="line">    <span class="comment">// This is guaranted when calling &#39;roaring_bitmap_portable_deserialize&#39;.</span></div>
@@ -611,12 +626,13 @@ SIMD-related throttling</h1>
 <h1><a class="anchor" id="autotoc_md18"></a>
 Thread safety</h1>
 <p>Like, for example, STL containers or Java's default data structures, the CRoaring library has no built-in thread support. Thus whenever you modify a bitmap in one thread, it is unsafe to query it in others. It is safe however to query bitmaps (without modifying them) from several distinct threads, as long as you do not use the copy-on-write attribute. For example, you can safely copy a bitmap and use both copies in concurrently. One should probably avoid the use of the copy-on-write attribute in a threaded environment.</p>
+<p>Some of our users rely on "copy-on-write" (default to disabled). A bitmap with the copy-on-write flag set to true might generate shared containers. A shared container is just a reference to a single container with reference counting (we keep track of the number of shallow copies). If you copy shared containers over several threads, this might be unsafe due to the need to update the counter concurrently. Thus for shared containers, we use reference counting with an atomic counter. If the library is compiled as a C library (the default), we use C11 atomics. Unfortunately, Visual Studio does not support C11 atomics at this times (though this is subject to change). To compensate, we use Windows-specific code in such instances (<code>_InterlockedDecrement</code> <code>_InterlockedIncrement</code>).</p>
 <h1><a class="anchor" id="autotoc_md19"></a>
 How to best aggregate bitmaps?</h1>
 <p>Suppose you want to compute the union (OR) of many bitmaps. How do you proceed? There are many different strategies.</p>
 <p>You can use <code>roaring_bitmap_or_many(bitmapcount, bitmaps)</code> or <code>roaring_bitmap_or_many_heap(bitmapcount, bitmaps)</code> or you may even roll your own aggregation:</p>
-<div class="fragment"><div class="line">roaring_bitmap_t *answer  = roaring_bitmap_copy(bitmaps[0]);</div>
-<div class="line">for (size_t i = 1; i &lt; bitmapcount; i++) {</div>
+<div class="fragment"><div class="line">roaring_bitmap_t *answer = roaring_bitmap_copy(bitmaps[0]);</div>
+<div class="line"><span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; bitmapcount; i++) {</div>
 <div class="line">  roaring_bitmap_or_inplace(answer, bitmaps[i]);</div>
 <div class="line">}</div>
 </div><!-- fragment --><p>All of them will work but they have different performance characteristics. The <code>roaring_bitmap_or_many_heap</code> should probably only be used if, after benchmarking, you find that it is faster by a good margin: it uses more memory.</p>
